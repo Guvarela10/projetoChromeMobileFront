@@ -5,11 +5,11 @@ import { useEffect, useRef, useState } from "react"
 import {
     Animated,
     Platform,
-    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
-    TouchableWithoutFeedback
+    TouchableWithoutFeedback,
+    View
 } from "react-native"
 
 interface Chrome {
@@ -58,22 +58,42 @@ export default function ListaChromes() {
 
     return (
         <>
-            <ScrollView contentContainerStyle={styles.container}>
                 <Text style={styles.title}>Lista de Chromebooks</Text>
-
-                {chromes.map((chrome) => (
-                    <Link href={{
-                        pathname: "/chromes/[chromeId]/criarEmprestimos",
-                        params: { chromeId: chrome.id }
-                    }} key={chrome.id} asChild>
-                        <TouchableOpacity style={styles.card} activeOpacity={0.7}>
-                            <Text style={styles.cardText}>Serial Number: {chrome.serialNumber}</Text>
-                            <Text style={styles.cardText}>Status: {chrome.status}</Text>
-                            <Text style={styles.cardText}>ID: {chrome.id}</Text>
+            {chromes.map((chrome) => (
+                <View key={chrome.id} style={styles.card}>
+                    {/* Botão editar no topo direito */}
+                    <Link
+                        href={{
+                            pathname: "/chromes/[chromeId]/editarChromes",
+                            params: { chromeId: chrome.id }
+                        }}
+                        asChild
+                    >
+                        <TouchableOpacity style={styles.editButton}>
+                            <AntDesign name="edit" size={20} color="#007AFF" />
                         </TouchableOpacity>
                     </Link>
-                ))}
-            </ScrollView>
+
+                    {/* Card clicável apenas nesta área */}
+                    <Link
+                        href={{
+                            pathname: "/chromes/[chromeId]/criarEmprestimos",
+                            params: { chromeId: chrome.id }
+                        }}
+                        asChild
+                    >
+                        <TouchableOpacity activeOpacity={0.7}>
+                            <View style={{ paddingTop: 10 }}>
+                                <Text style={styles.cardText}>Serial Number: {chrome.serialNumber}</Text>
+                                <Text style={styles.cardText}>Status: {chrome.status}</Text>
+                                <Text style={styles.cardText}>ID: {chrome.id}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </Link>
+                </View>
+            ))}
+
+
 
             <Link href={"/chromes/criarChrome"} asChild>
                 <TouchableWithoutFeedback
@@ -92,7 +112,7 @@ export default function ListaChromes() {
 const styles = StyleSheet.create({
     container: {
         padding: 20,
-        paddingBottom: 120, // pra não ficar embaixo do botão flutuante
+        paddingBottom: 120,
         backgroundColor: "#f2f2f2"
     },
     title: {
@@ -115,15 +135,26 @@ const styles = StyleSheet.create({
         borderLeftColor: "#007AFF",
         borderWidth: 2,
         borderColor: "#000000",
-        // força largura pra evitar mudanças de tamanho
-        width: "100%"
+        width: "100%",
+        position: "relative"
     },
     cardText: {
         fontSize: 18,
         fontWeight: "600",
         color: "#222"
     },
-
+    cardActions: {
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        flexDirection: "row",
+        gap: 10
+    },
+    actionButton: {
+        padding: 6,
+        backgroundColor: '#e6f0ff',
+        borderRadius: 6
+    },
     fab: {
         position: "absolute",
         bottom: 24,
@@ -143,5 +174,15 @@ const styles = StyleSheet.create({
             transition: 'all 0.2s ease-in-out',
             cursor: 'pointer',
         })
-    }
+    },
+
+    editButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    zIndex: 2,
+    padding: 6,
+    backgroundColor: "#e6f0ff",
+    borderRadius: 8,
+},
 })

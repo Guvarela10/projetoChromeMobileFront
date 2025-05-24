@@ -1,6 +1,5 @@
-import { AntDesign } from "@expo/vector-icons"
 import { useIsFocused } from "@react-navigation/native"
-import { Link, useLocalSearchParams } from "expo-router"
+import { useLocalSearchParams } from "expo-router"
 import { useEffect, useRef, useState } from "react"
 import {
     Animated,
@@ -8,8 +7,7 @@ import {
     ScrollView,
     StyleSheet,
     Text,
-    TouchableOpacity,
-    TouchableWithoutFeedback
+    TouchableOpacity
 } from "react-native"
 
 interface Emprestimo {
@@ -64,13 +62,11 @@ export default function ListaEmprestimos() {
                 <Text style={styles.title}>Lista de Emprestimos</Text>
 
                 {emprestimos.map((emprestimo) => (
-                    <Link href="/alunos" key={emprestimo.id} asChild>
-                        <TouchableOpacity style={styles.card} activeOpacity={0.7}>
-                            <Text style={styles.cardText}>ID: {emprestimo.id}</Text>
-                            <Text style={styles.cardText}>Chrome ID: {emprestimo.chromeId}</Text>
-                            <Text style={styles.cardText}>Status: {emprestimo.status}</Text>
-                        </TouchableOpacity> 
-                    </Link>
+                    <TouchableOpacity key={emprestimo.id} style={styles.card} activeOpacity={0.7}>
+                        <Text style={styles.cardText}>ID: {emprestimo.id}</Text>
+                        <Text style={styles.cardText}>Chrome ID: {emprestimo.chromeId}</Text>
+                        <Text style={styles.cardText}>Status: {emprestimo.status}</Text>
+                    </TouchableOpacity>
                 ))}
             </ScrollView>
         </>

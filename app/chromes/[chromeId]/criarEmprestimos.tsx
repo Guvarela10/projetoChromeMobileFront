@@ -1,9 +1,8 @@
+import { Picker } from '@react-native-picker/picker';
+import { useIsFocused } from "@react-navigation/native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Alert, Button, Text, TextInput, View } from "react-native";
-import { Picker } from '@react-native-picker/picker';
-import { useIsFocused } from "@react-navigation/native";
-
 
 interface Aluno {
     id: string
@@ -28,11 +27,9 @@ export default function CriarEmprestimo() {
     })
     const [alunos, setAlunos] = useState<Aluno[]>([])
 
-    const [selectedLanguage, setSelectedLanguage] = useState();
-
     useEffect(() => {
         async function fetchAlunos() {
-            const response = await fetch("http://10.21.144.201:3000/alunos")
+            const response = await fetch("http://192.168.15.37:3000/alunos")
             const body = await response.json()
             setAlunos(body)
         }
@@ -42,7 +39,7 @@ export default function CriarEmprestimo() {
 
 
     async function salvarChrome() {
-        const response = await fetch(`http://10.21.144.201:3000/chromes/${chromeId}/emprestimos`, {
+        const response = await fetch(`http://192.168.15.37:3000/chromes/${chromeId}/emprestimos`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json"
@@ -52,6 +49,7 @@ export default function CriarEmprestimo() {
                 alunoId: emprestimo.alunoId
             })
         })
+
         if (response.ok) {
             Alert.alert('Sucesso',
                 'Emprestimo cadastrado!',
@@ -76,20 +74,19 @@ export default function CriarEmprestimo() {
                 <View>
                     <Text>
                         Status: </Text>
-                    <TextInput placeholder="Digite o número de série:"
+                    <TextInput placeholder="Digite o status:"
                         value={emprestimo.status}
                         onChangeText={(newStatus) => {
                             setEmprestimo({ ...emprestimo, status: newStatus })
                         }}
                     />
                 </View>
-
             }
 
             <Picker
                 selectedValue={emprestimo.alunoId}
                 onValueChange={(itemValue, itemIndex) =>
-                    setEmprestimo({ ...emprestimo, alunoId: itemValue})
+                    setEmprestimo({ ...emprestimo, alunoId: itemValue })
                 }>
                 {alunos.map((aluno) => (
                     <Picker.Item key={aluno.id} label={aluno.name} value={aluno.id} />
@@ -98,6 +95,8 @@ export default function CriarEmprestimo() {
             <View>
                 <Button onPress={salvarChrome} title="Salvar"></Button>
             </View>
+
         </>
+
     )
 }

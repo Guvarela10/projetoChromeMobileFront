@@ -1,10 +1,11 @@
+import { MaterialIcons } from "@expo/vector-icons"
 import { useIsFocused } from "@react-navigation/native"
 import { useLocalSearchParams } from "expo-router"
 import { useEffect, useRef, useState } from "react"
 import {
+    Alert,
     Animated,
     Platform,
-    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity
@@ -13,7 +14,12 @@ import {
 interface Emprestimo {
     id: string
     chromeId: string,
-    status: string
+    status: string,
+}
+
+interface Chromes {
+    id: string
+    serialNumber: string
 }
 
 export default function ListaEmprestimos() {
@@ -21,12 +27,13 @@ export default function ListaEmprestimos() {
     const { alunoId } = useLocalSearchParams();
     const telaFocada = useIsFocused()
     const scaleAnim = useRef(new Animated.Value(1)).current
+    const [chromes, setChromes] = useState<Chromes[]>([])
 
 
     useEffect(() => {
         async function fetchEmprestimos() {
             try {
-                const response = await fetch(`http://10.21.144.201:3000/emprestimos/${alunoId}/`)
+                const response = await fetch(`http://192.168.15.37:3000/emprestimos/${alunoId}/`)
                 const body = await response.json()
                 setEmprestimos(body)
             } catch (error) {
@@ -39,26 +46,78 @@ export default function ListaEmprestimos() {
         fetchEmprestimos()
     }, [telaFocada])
 
-    const handlePressIn = () => {
-        Animated.spring(scaleAnim, {
-            toValue: 0.92,
-            useNativeDriver: true,
-        }).start()
-    }
+    useEffect(() => {
+        async function fetchChromes() {
+            try {
+                const response = await fetch(`http://192.168.15.37:3000/chromes`)
+                const body = await response.json()
+                setChromes(body)
+            } catch (error) {
+                console.log(
+                    "Não foi possível conectar ao servidor e puxar a lista de emprestimos: " +
+                    error
+                )
+            }
+        }
+        fetchChromes()
+    }, [telaFocada])
 
+    function confirmarExclusao(id: string) {
+            Alert.alert(
+                "Confirmar Exclusão",
+                "Deseja realmente excluir este emprestimo?",
+                [
+                    { text: "Cancelar", style: "cancel" },
+                    { text: "Excluir", style: "destructive", onPress: () => deletarEmprestimo(id) }
+                ]
+            )
+        }
+    
+        async function deletarEmprestimo(id: string) {
+            try {
+                const response = await fetch(`http://192.168.15.37:3000/emprestimos/delete/${id}`, {
+                    method: "DELETE"
+                })
 
-    const handlePressOut = () => {
-        Animated.spring(scaleAnim, {
-            toValue: 1,
-            friction: 3,
-            tension: 40,
-            useNativeDriver: true,
-        }).start()
-    }
+                // console.log('responde porra')
+                // console.log(response)
+    
+                if (response.ok) {
+                    Alert.alert("Sucesso", "Emprestimo excluído com sucesso!")
+                    setEmprestimos(del => del.filter(emprestimo => emprestimo.id !== id))
+                } else {
+                    Alert.alert("Erro", "Não foi possível excluir o emprestimo!")
+                }
+            } catch (error) {
+                Alert.alert("Erro", "Erro ao excluir: " + error)
+            }
+        }
 
     return (
         <>
-            <ScrollView contentContainerStyle={styles.container}>
+
+            {emprestimos.map((emprestimo) => {
+                const chrome = chromes.find(c => c.id === emprestimo.chromeId)
+                return (
+                    <TouchableOpacity key={emprestimo.id} style={styles.card} activeOpacity={0.7}>
+                        <Text style={styles.cardText}>ID: {emprestimo.id}</Text>
+                        <Text style={styles.cardText}>Status: {emprestimo.status}</Text>
+                        <Text style={styles.cardText}>
+                            Serial Number: {chrome ? chrome.serialNumber : 'Carregando...'}
+                        </Text>
+                        {/* Botão excluir */}
+                        <TouchableOpacity
+                            style={[styles.editButton, { right: 50 }]}
+                            onPress={() => confirmarExclusao(emprestimo.id)}
+                        >
+                            <MaterialIcons name="delete" size={20} color="#FF3B30" />
+                        </TouchableOpacity>
+                    </TouchableOpacity>
+                )
+            })}
+
+
+            {/* <ScrollView contentContainerStyle={styles.container}>
                 <Text style={styles.title}>Lista de Emprestimos</Text>
 
                 {emprestimos.map((emprestimo) => (
@@ -68,7 +127,7 @@ export default function ListaEmprestimos() {
                         <Text style={styles.cardText}>Status: {emprestimo.status}</Text>
                     </TouchableOpacity>
                 ))}
-            </ScrollView>
+            </ScrollView> */}
         </>
     )
 }
@@ -107,7 +166,15 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         color: "#222"
     },
-
+    editButton: {
+        position: "absolute",
+        top: 10,
+        right: 10,
+        zIndex: 2,
+        padding: 6,
+        backgroundColor: "#e6f0ff",
+        borderRadius: 8,
+    },
     fab: {
         position: "absolute",
         bottom: 24,

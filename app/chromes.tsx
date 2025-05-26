@@ -1,8 +1,9 @@
-import { AntDesign } from "@expo/vector-icons"
+import { AntDesign, MaterialIcons } from "@expo/vector-icons"
 import { useIsFocused } from "@react-navigation/native"
 import { Link } from "expo-router"
 import { useEffect, useRef, useState } from "react"
 import {
+    Alert,
     Animated,
     Platform,
     StyleSheet,
@@ -14,8 +15,7 @@ import {
 
 interface Chrome {
     id: string
-    serialNumber: string,
-    status: string
+    serialNumber: string
 }
 
 export default function ListaChromes() {
@@ -24,20 +24,46 @@ export default function ListaChromes() {
     const scaleAnim = useRef(new Animated.Value(1)).current
 
     useEffect(() => {
-        async function fetchChromes() {
-            try {
-                const response = await fetch("http://10.21.144.201:3000/chromes")
-                const body = await response.json()
-                setChromes(body)
-            } catch (error) {
-                console.log(
-                    "Não foi possível conectar ao servidor e puxar a lista de Chromebooks: " +
-                    error
-                )
-            }
-        }
         fetchChromes()
     }, [telaFocada])
+
+    async function fetchChromes() {
+        try {
+            const response = await fetch("http://192.168.15.37:3000/chromes")
+            const body = await response.json()
+            setChromes(body)
+        } catch (error) {
+            console.log("Erro ao buscar chromes: " + error)
+        }
+    }
+
+    function confirmarExclusao(id: string) {
+        Alert.alert(
+            "Confirmar Exclusão",
+            "Deseja realmente excluir este Chromebook?",
+            [
+                { text: "Cancelar", style: "cancel" },
+                { text: "Excluir", style: "destructive", onPress: () => deletarChrome(id) }
+            ]
+        )
+    }
+
+    async function deletarChrome(id: string) {
+        try {
+            const response = await fetch(`http://192.168.15.37:3000/chromes/delete/${id}`, {
+                method: "DELETE"
+            })
+
+            if (response.ok) {
+                Alert.alert("Sucesso", "Chromebook excluído com sucesso!")
+                setChromes(del => del.filter(chrome => chrome.id !== id))
+            } else {
+                Alert.alert("Erro", "Não foi possível excluir o Chromebook!")
+            }
+        } catch (error) {
+            Alert.alert("Erro", "Erro ao excluir: " + error)
+        }
+    }
 
     const handlePressIn = () => {
         Animated.spring(scaleAnim, {
@@ -45,7 +71,6 @@ export default function ListaChromes() {
             useNativeDriver: true,
         }).start()
     }
-
 
     const handlePressOut = () => {
         Animated.spring(scaleAnim, {
@@ -58,10 +83,10 @@ export default function ListaChromes() {
 
     return (
         <>
-                <Text style={styles.title}>Lista de Chromebooks</Text>
+            <Text style={styles.title}>Lista de Chromebooks</Text>
             {chromes.map((chrome) => (
                 <View key={chrome.id} style={styles.card}>
-                    {/* Botão editar no topo direito */}
+                    {/* Botão editar */}
                     <Link
                         href={{
                             pathname: "/chromes/[chromeId]/editarChromes",
@@ -74,7 +99,15 @@ export default function ListaChromes() {
                         </TouchableOpacity>
                     </Link>
 
-                    {/* Card clicável apenas nesta área */}
+                    {/* Botão excluir */}
+                    <TouchableOpacity
+                        style={[styles.editButton, { right: 50 }]}
+                        onPress={() => confirmarExclusao(chrome.id)}
+                    >
+                        <MaterialIcons name="delete" size={20} color="#FF3B30" />
+                    </TouchableOpacity>
+
+                    {/* Card principal */}
                     <Link
                         href={{
                             pathname: "/chromes/[chromeId]/criarEmprestimos",
@@ -84,16 +117,13 @@ export default function ListaChromes() {
                     >
                         <TouchableOpacity activeOpacity={0.7}>
                             <View style={{ paddingTop: 10 }}>
-                                <Text style={styles.cardText}>Serial Number: {chrome.serialNumber}</Text>
-                                <Text style={styles.cardText}>Status: {chrome.status}</Text>
                                 <Text style={styles.cardText}>ID: {chrome.id}</Text>
+                                <Text style={styles.cardText}>Serial Number: {chrome.serialNumber}</Text>
                             </View>
                         </TouchableOpacity>
                     </Link>
                 </View>
             ))}
-
-
 
             <Link href={"/chromes/criarChrome"} asChild>
                 <TouchableWithoutFeedback
@@ -110,11 +140,6 @@ export default function ListaChromes() {
 }
 
 const styles = StyleSheet.create({
-    container: {
-        padding: 20,
-        paddingBottom: 120,
-        backgroundColor: "#f2f2f2"
-    },
     title: {
         fontSize: 28,
         fontWeight: "700",
@@ -143,17 +168,14 @@ const styles = StyleSheet.create({
         fontWeight: "600",
         color: "#222"
     },
-    cardActions: {
-        position: 'absolute',
+    editButton: {
+        position: "absolute",
         top: 10,
         right: 10,
-        flexDirection: "row",
-        gap: 10
-    },
-    actionButton: {
+        zIndex: 2,
         padding: 6,
-        backgroundColor: '#e6f0ff',
-        borderRadius: 6
+        backgroundColor: "#e6f0ff",
+        borderRadius: 8,
     },
     fab: {
         position: "absolute",
@@ -175,14 +197,4 @@ const styles = StyleSheet.create({
             cursor: 'pointer',
         })
     },
-
-    editButton: {
-    position: "absolute",
-    top: 10,
-    right: 10,
-    zIndex: 2,
-    padding: 6,
-    backgroundColor: "#e6f0ff",
-    borderRadius: 8,
-},
 })

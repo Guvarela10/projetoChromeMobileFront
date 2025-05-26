@@ -1,13 +1,15 @@
-import { AntDesign } from '@expo/vector-icons'
+import { AntDesign, MaterialIcons } from '@expo/vector-icons'
 import { useIsFocused } from "@react-navigation/native"
 import { Link } from "expo-router"
 import { useEffect, useRef, useState } from "react"
 import {
+  Alert,
   Animated,
   Platform,
   ScrollView,
   StyleSheet,
   Text,
+  TouchableOpacity,
   TouchableWithoutFeedback,
   View,
 } from "react-native"
@@ -25,14 +27,40 @@ export default function ListaAlunos() {
 
   useEffect(() => {
     async function fetchAlunos() {
-      console.log('to aqui antes pora')
-      const response = await fetch("http://10.21.144.201:3000/alunos")
+      const response = await fetch("http://192.168.15.37:3000/alunos")
       const body = await response.json()
-      console.log("body", body)
       setAlunos(body)
     }
     fetchAlunos()
   }, [telaFocada])
+
+  function confirmarExclusao(id: string) {
+          Alert.alert(
+              "Confirmar Exclusão",
+              "Deseja realmente excluir este aluno?",
+              [
+                  { text: "Cancelar", style: "cancel" },
+                  { text: "Excluir", style: "destructive", onPress: () => deletarAluno(id) }
+              ]
+          )
+      }
+  
+      async function deletarAluno(id: string) {
+          try {
+              const response = await fetch(`http://192.168.15.37:3000/alunos/delete/${id}`, {
+                  method: "DELETE"
+              })
+  
+              if (response.ok) {
+                  Alert.alert("Sucesso", "Chromebook excluído com sucesso!")
+                  setAlunos(del => del.filter(aluno => aluno.id !== id))
+              } else {
+                  Alert.alert("Erro", "Não foi possível excluir o aluno!")
+              }
+          } catch (error) {
+              Alert.alert("Erro", "Erro ao excluir: " + error)
+          }
+      }
 
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
@@ -56,26 +84,46 @@ export default function ListaAlunos() {
         <Text style={styles.titulo}>Lista de Alunos</Text>
 
         {alunos.map((aluno) => (
-          <Link
-            key={aluno.id}
-            href={{
-              pathname: "/alunos/[alunoId]/emprestimos",
-              params: { alunoId: aluno.id }
-            }}
-          >
-            <View style={styles.card}>
-              <Text style={styles.label}>
-                Nome: <Text style={styles.valor}>{aluno.name}</Text>
-              </Text>
-              <Text style={styles.label}>
-                Matrícula: <Text style={styles.valor}>{aluno.matricula}</Text>
-              </Text>
-              <Text style={styles.label}>
-                ID: <Text style={styles.valor}>{aluno.id}</Text>
-              </Text>
-            </View>
-          </Link>
-        ))}
+                <View key={aluno.id} style={styles.card}>
+                    {/* Botão editar */}
+                    <Link
+                        href={{
+                            pathname: "/alunos/[alunoId]/editarAlunos",
+                            params: { alunoId: aluno.id }
+                        }}
+                        asChild
+                    >
+                        <TouchableOpacity style={styles.editButton}>
+                            <AntDesign name="edit" size={20} color="#007AFF" />
+                        </TouchableOpacity>
+                    </Link>
+
+                    {/* Botão excluir */}
+                    <TouchableOpacity
+                        style={[styles.editButton, { right: 50 }]}
+                        onPress={() => confirmarExclusao(aluno.id)}
+                    >
+                        <MaterialIcons name="delete" size={20} color="#FF3B30" />
+                    </TouchableOpacity>
+
+                    {/* Card principal */}
+                    <Link
+                        href={{
+                            pathname: "/alunos/[alunoId]/emprestimos",
+                            params: { alunoId: aluno.id }
+                        }}
+                        asChild
+                    >
+                        <TouchableOpacity activeOpacity={0.7}>
+                            <View style={{ paddingTop: 10 }}>
+                                <Text style={styles.cardText}>ID: {aluno.id}</Text>
+                                <Text style={styles.cardText}>Nome: {aluno.name}</Text>
+                                <Text style={styles.cardText}>Nome: {aluno.matricula}</Text>
+                            </View>
+                        </TouchableOpacity>
+                    </Link>
+                </View>
+            ))}
       </ScrollView>
 
       <Link href={"/alunos/criar"} asChild>
@@ -141,6 +189,20 @@ const styles = StyleSheet.create({
     color: "#111",
     fontSize: 16,
   },
+  cardText: {
+        fontSize: 18,
+        fontWeight: "600",
+        color: "#222"
+    },
+     editButton: {
+        position: "absolute",
+        top: 10,
+        right: 10,
+        zIndex: 2,
+        padding: 6,
+        backgroundColor: "#e6f0ff",
+        borderRadius: 8,
+    },
   fab: {
     position: "absolute",
     bottom: 24,

@@ -4,26 +4,25 @@ import { Alert, Button, Text, TextInput, View } from "react-native";
 
 interface Chrome {
     serialNumber: string
-    status: string
 }
 
 export default function CriarChrome() {
     const router = useRouter()
     const [chromes, setChromes] = useState<Chrome>({
-        serialNumber: '',
-        status: ''
+        serialNumber: ''
     })
 
     async function salvarChrome() {
-        const response = await fetch('http://10.21.144.201:3000/chromes', {
+        const response = await fetch('http://192.168.15.37:3000/chromes', {
+            
             method: "POST",
             headers: {
                 "Content-type": "application/json"
             },
             body: JSON.stringify({
-                serialNumber: chromes.serialNumber,
-                status: chromes.status
+                serialNumber: chromes.serialNumber
             })
+            
         })
         if (response.ok) {
             Alert.alert('Sucesso',
@@ -52,14 +51,6 @@ export default function CriarChrome() {
                     value={chromes.serialNumber}
                     onChangeText={(newSerial) => {
                         setChromes({ ...chromes, serialNumber: newSerial })
-                    }}
-                />
-                <Text>
-                    Status: </Text>
-                <TextInput placeholder="Digite o status:"
-                    value={chromes.status}
-                    onChangeText={(newStatus) => {
-                        setChromes({ ...chromes, status: newStatus })
                     }}
                 />
             </View>

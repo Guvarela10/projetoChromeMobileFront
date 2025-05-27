@@ -6,6 +6,7 @@ import {
     Alert,
     Animated,
     Platform,
+    ScrollView,
     StyleSheet,
     Text,
     TouchableOpacity,
@@ -29,7 +30,7 @@ export default function ListaChromes() {
 
     async function fetchChromes() {
         try {
-            const response = await fetch("http://192.168.15.37:3000/chromes")
+            const response = await fetch("http://10.21.144.201:3000/chromes")
             const body = await response.json()
             setChromes(body)
         } catch (error) {
@@ -50,7 +51,7 @@ export default function ListaChromes() {
 
     async function deletarChrome(id: string) {
         try {
-            const response = await fetch(`http://192.168.15.37:3000/chromes/delete/${id}`, {
+            const response = await fetch(`http://10.21.144.201:3000/chromes/delete/${id}`, {
                 method: "DELETE"
             })
 
@@ -82,48 +83,51 @@ export default function ListaChromes() {
     }
 
     return (
-        <>
-            <Text style={styles.title}>Lista de Chromebooks</Text>
-            {chromes.map((chrome) => (
-                <View key={chrome.id} style={styles.card}>
-                    {/* Botão editar */}
-                    <Link
-                        href={{
-                            pathname: "/chromes/[chromeId]/editarChromes",
-                            params: { chromeId: chrome.id }
-                        }}
-                        asChild
-                    >
-                        <TouchableOpacity style={styles.editButton}>
-                            <AntDesign name="edit" size={20} color="#007AFF" />
-                        </TouchableOpacity>
-                    </Link>
+        <View style={styles.container}>
+            <ScrollView contentContainerStyle={styles.scrollContent}>
+                <Text style={styles.titulo}>Lista de Chromebooks</Text>
 
-                    {/* Botão excluir */}
-                    <TouchableOpacity
-                        style={[styles.editButton, { right: 50 }]}
-                        onPress={() => confirmarExclusao(chrome.id)}
-                    >
-                        <MaterialIcons name="delete" size={20} color="#FF3B30" />
-                    </TouchableOpacity>
+                {chromes.map((chrome) => (
+                    <View key={chrome.id} style={styles.card}>
+                        {/* Botão editar */}
+                        <Link
+                            href={{
+                                pathname: "/chromes/[chromeId]/editarChromes",
+                                params: { chromeId: chrome.id }
+                            }}
+                            asChild
+                        >
+                            <TouchableOpacity style={styles.editButton}>
+                                <AntDesign name="edit" size={20} color="#007AFF" />
+                            </TouchableOpacity>
+                        </Link>
 
-                    {/* Card principal */}
-                    <Link
-                        href={{
-                            pathname: "/chromes/[chromeId]/criarEmprestimos",
-                            params: { chromeId: chrome.id }
-                        }}
-                        asChild
-                    >
-                        <TouchableOpacity activeOpacity={0.7}>
-                            <View style={{ paddingTop: 10 }}>
-                                <Text style={styles.cardText}>ID: {chrome.id}</Text>
-                                <Text style={styles.cardText}>Serial Number: {chrome.serialNumber}</Text>
-                            </View>
+                        {/* Botão excluir */}
+                        <TouchableOpacity
+                            style={[styles.editButton, { right: 50 }]}
+                            onPress={() => confirmarExclusao(chrome.id)}
+                        >
+                            <MaterialIcons name="delete" size={20} color="#FF3B30" />
                         </TouchableOpacity>
-                    </Link>
-                </View>
-            ))}
+
+                        {/* Card principal */}
+                        <Link
+                            href={{
+                                pathname: "/chromes/[chromeId]/criarEmprestimos",
+                                params: { chromeId: chrome.id }
+                            }}
+                            asChild
+                        >
+                            <TouchableOpacity activeOpacity={0.7}>
+                                <View style={{ paddingTop: 10 }}>
+                                    <Text style={styles.cardText}>ID: {chrome.id}</Text>
+                                    <Text style={styles.cardText}>Nome: {chrome.serialNumber}</Text>
+                                </View>
+                            </TouchableOpacity>
+                        </Link>
+                    </View>
+                ))}
+            </ScrollView>
 
             <Link href={"/chromes/criarChrome"} asChild>
                 <TouchableWithoutFeedback
@@ -135,16 +139,26 @@ export default function ListaChromes() {
                     </Animated.View>
                 </TouchableWithoutFeedback>
             </Link>
-        </>
+        </View>
     )
 }
 
 const styles = StyleSheet.create({
-    title: {
+    container: {
+        flex: 1,
+        backgroundColor: "#f2f2f2",
+    },
+    scrollContent: {
+        padding: 16,
+        paddingBottom: 100,
+        alignItems: 'center', // centraliza os cards horizontalmente
+    },
+    titulo: {
         fontSize: 28,
-        fontWeight: "700",
-        marginBottom: 20,
-        color: "#333"
+        fontWeight: "bold",
+        marginBottom: 24,
+        textAlign: "center",
+        color: "#007AFF",
     },
     card: {
         backgroundColor: "#ffffff",
@@ -160,8 +174,23 @@ const styles = StyleSheet.create({
         borderLeftColor: "#007AFF",
         borderWidth: 2,
         borderColor: "#000000",
-        width: "100%",
-        position: "relative"
+
+        // Ajuste de proporção
+        width: '100%',
+        maxWidth: 400,
+        minHeight: 130,
+        justifyContent: 'center',
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: "#444",
+        marginBottom: 6,
+    },
+    valor: {
+        fontWeight: "400",
+        color: "#111",
+        fontSize: 16,
     },
     cardText: {
         fontSize: 18,
@@ -195,6 +224,6 @@ const styles = StyleSheet.create({
         ...(Platform.OS === 'web' && {
             transition: 'all 0.2s ease-in-out',
             cursor: 'pointer',
-        })
+        }),
     },
 })

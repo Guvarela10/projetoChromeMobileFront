@@ -14,7 +14,7 @@ export default function CriarChrome() {
     const { chromeId } = useLocalSearchParams()
 
     async function editarChrome() {
-        const response = await fetch(`http://192.168.15.37:3000/chromes/${chromeId}`, {
+        const response = await fetch(`http://10.21.144.201:3000/chromes/${chromeId}`, {
             method: "PUT",
             headers: {
                 "Content-type": "application/json"

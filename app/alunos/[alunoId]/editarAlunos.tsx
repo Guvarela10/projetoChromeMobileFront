@@ -16,7 +16,7 @@ export default function CriarAluno() {
     const { alunoId } = useLocalSearchParams()
 
     async function editarAluno() {
-        const response = await fetch(`http://192.168.15.37:3000/alunos/${alunoId}`, {
+        const response = await fetch(`http://10.21.144.201:3000/alunos/${alunoId}`, {
             method: "PUT",
             headers: {
                 "Content-type": "application/json"

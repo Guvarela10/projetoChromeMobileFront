@@ -2,44 +2,53 @@ import { Picker } from '@react-native-picker/picker';
 import { useIsFocused } from "@react-navigation/native";
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import { Alert, Button, Text, TextInput, View } from "react-native";
+import {
+    Alert,
+    Platform,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View
+} from "react-native";
 
 interface Aluno {
-    id: string
-    name: string
-    matricula: string
+    id: string;
+    name: string;
+    matricula: string;
 }
 
 interface Emprestimo {
-    alunoId: string,
-    status: string
+    alunoId: string;
+    status: string;
 }
 
 export default function CriarEmprestimo() {
-    const router = useRouter()
-    const { chromeId } = useLocalSearchParams()
-    const { alunoId } = useLocalSearchParams()
-    const telaFocada = useIsFocused()
+    const router = useRouter();
+    const { chromeId } = useLocalSearchParams();
+    const telaFocada = useIsFocused();
 
     const [emprestimo, setEmprestimo] = useState<Emprestimo>({
         status: '',
         alunoId: ''
-    })
-    const [alunos, setAlunos] = useState<Aluno[]>([])
+    });
+
+    const [alunos, setAlunos] = useState<Aluno[]>([]);
 
     useEffect(() => {
         async function fetchAlunos() {
-            const response = await fetch("http://192.168.15.37:3000/alunos")
-            const body = await response.json()
-            setAlunos(body)
+            const response = await fetch("http://10.21.144.201:3000/alunos");
+            const body = await response.json();
+            setAlunos(body);
+            if (body.length > 0) {
+                setEmprestimo((prev) => ({ ...prev, alunoId: body[0].id }));
+            }
         }
-        fetchAlunos()
-    }, [telaFocada])
+        fetchAlunos();
+    }, [telaFocada]);
 
-
-
-    async function salvarChrome() {
-        const response = await fetch(`http://192.168.15.37:3000/chromes/${chromeId}/emprestimos`, {
+    async function salvarEmprestimo() {
+        const response = await fetch(`http://10.21.144.201:3000/chromes/${chromeId}/emprestimos`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json"
@@ -48,55 +57,112 @@ export default function CriarEmprestimo() {
                 status: emprestimo.status,
                 alunoId: emprestimo.alunoId
             })
-        })
+        });
 
         if (response.ok) {
-            Alert.alert('Sucesso',
-                'Emprestimo cadastrado!',
-                [
-                    {
-                        text: "OK", onPress: () => {
-                            router.back()
-                        }
-                    }
-                ]
-            )
+            Alert.alert('Sucesso', 'Empréstimo cadastrado!', [
+                { text: "OK", onPress: () => router.back() }
+            ]);
         } else {
-            Alert.alert('Erro',
-                'Emprestimo não cadastrado!',
-            )
+            Alert.alert('Erro', 'Empréstimo não cadastrado!');
         }
     }
 
     return (
-        <>
-            {
-                <View>
-                    <Text>
-                        Status: </Text>
-                    <TextInput placeholder="Digite o status:"
-                        value={emprestimo.status}
-                        onChangeText={(newStatus) => {
-                            setEmprestimo({ ...emprestimo, status: newStatus })
-                        }}
-                    />
-                </View>
-            }
+        <View style={styles.container}>
+            <Text style={styles.title}>Cadastrar Empréstimo</Text>
 
-            <Picker
-                selectedValue={emprestimo.alunoId}
-                onValueChange={(itemValue, itemIndex) =>
-                    setEmprestimo({ ...emprestimo, alunoId: itemValue })
-                }>
-                {alunos.map((aluno) => (
-                    <Picker.Item key={aluno.id} label={aluno.name} value={aluno.id} />
-                ))}
-            </Picker >
-            <View>
-                <Button onPress={salvarChrome} title="Salvar"></Button>
+            <Text style={styles.label}>Status do Empréstimo:</Text>
+            <TextInput
+                style={styles.input}
+                placeholder="Digite o status (Ex: emprestado)"
+                placeholderTextColor="#aaa"
+                value={emprestimo.status}
+                onChangeText={(text) =>
+                    setEmprestimo({ ...emprestimo, status: text })
+                }
+            />
+
+            <Text style={styles.label}>Selecionar Aluno:</Text>
+            <View style={styles.pickerWrapper}>
+                <Picker
+                    selectedValue={emprestimo.alunoId}
+                    onValueChange={(value) =>
+                        setEmprestimo({ ...emprestimo, alunoId: value })
+                    }
+                    style={styles.picker}
+                >
+                    {alunos.map((aluno) => (
+                        <Picker.Item key={aluno.id} label={aluno.name} value={aluno.id} />
+                    ))}
+                </Picker>
             </View>
 
-        </>
-
-    )
+            <TouchableOpacity style={styles.button} onPress={salvarEmprestimo}>
+                <Text style={styles.buttonText}>Salvar</Text>
+            </TouchableOpacity>
+        </View>
+    );
 }
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        padding: 24,
+        backgroundColor: '#f2f2f2',
+        justifyContent: 'center',
+    },
+    title: {
+        fontSize: 26,
+        fontWeight: '700',
+        marginBottom: 24,
+        color: '#007AFF',
+        textAlign: 'center'
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: '600',
+        marginBottom: 8,
+        color: '#333'
+    },
+    input: {
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        padding: 14,
+        fontSize: 16,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        marginBottom: 20
+    },
+    pickerWrapper: {
+        backgroundColor: '#fff',
+        borderRadius: 10,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        marginBottom: 24
+    },
+    picker: {
+        width: '100%',
+        height: 50
+    },
+    button: {
+        backgroundColor: '#007AFF',
+        paddingVertical: 14,
+        borderRadius: 10,
+        alignItems: 'center',
+        elevation: 3,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+        ...(Platform.OS === 'web' && {
+            cursor: 'pointer',
+            transition: 'all 0.2s ease-in-out',
+        })
+    },
+    buttonText: {
+        color: '#fff',
+        fontSize: 18,
+        fontWeight: '700'
+    }
+});

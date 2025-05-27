@@ -27,7 +27,7 @@ export default function ListaAlunos() {
 
   useEffect(() => {
     async function fetchAlunos() {
-      const response = await fetch("http://10.21.144.201:3000/alunos")
+      const response = await fetch("http://192.168.15.37:3000/alunos")
       const body = await response.json()
       setAlunos(body)
     }
@@ -47,7 +47,7 @@ export default function ListaAlunos() {
   
       async function deletarAluno(id: string) {
           try {
-              const response = await fetch(`http://10.21.144.201:3000/alunos/delete/${id}`, {
+              const response = await fetch(`http://192.168.15.37:3000/alunos/delete/${id}`, {
                   method: "DELETE"
               })
   
@@ -81,6 +81,8 @@ export default function ListaAlunos() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContent}>
+        <Text> </Text>
+        <Text> </Text>
         <Text style={styles.titulo}>Lista de Alunos</Text>
 
         {alunos.map((aluno) => (
@@ -118,7 +120,7 @@ export default function ListaAlunos() {
                             <View style={{ paddingTop: 10 }}>
                                 <Text style={styles.cardText}>ID: {aluno.id}</Text>
                                 <Text style={styles.cardText}>Nome: {aluno.name}</Text>
-                                <Text style={styles.cardText}>Nome: {aluno.matricula}</Text>
+                                <Text style={styles.cardText}>Matricula: {aluno.matricula}</Text>
                             </View>
                         </TouchableOpacity>
                     </Link>

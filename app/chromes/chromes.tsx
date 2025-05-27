@@ -30,7 +30,7 @@ export default function ListaChromes() {
 
     async function fetchChromes() {
         try {
-            const response = await fetch("http://10.21.144.201:3000/chromes")
+            const response = await fetch("http://192.168.15.37:3000/chromes")
             const body = await response.json()
             setChromes(body)
         } catch (error) {
@@ -51,7 +51,7 @@ export default function ListaChromes() {
 
     async function deletarChrome(id: string) {
         try {
-            const response = await fetch(`http://10.21.144.201:3000/chromes/delete/${id}`, {
+            const response = await fetch(`http://192.168.15.37:3000/chromes/delete/${id}`, {
                 method: "DELETE"
             })
 
@@ -85,6 +85,8 @@ export default function ListaChromes() {
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
+                <Text> </Text>
+                <Text> </Text>
                 <Text style={styles.titulo}>Lista de Chromebooks</Text>
 
                 {chromes.map((chrome) => (
@@ -121,7 +123,7 @@ export default function ListaChromes() {
                             <TouchableOpacity activeOpacity={0.7}>
                                 <View style={{ paddingTop: 10 }}>
                                     <Text style={styles.cardText}>ID: {chrome.id}</Text>
-                                    <Text style={styles.cardText}>Nome: {chrome.serialNumber}</Text>
+                                    <Text style={styles.cardText}>Serial Number: {chrome.serialNumber}</Text>
                                 </View>
                             </TouchableOpacity>
                         </Link>

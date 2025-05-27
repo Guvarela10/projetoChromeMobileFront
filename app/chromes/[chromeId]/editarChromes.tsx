@@ -1,62 +1,113 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
-import { Alert, Button, Text, TextInput, View } from "react-native";
+import {
+    Alert,
+    Platform,
+    StyleSheet,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    View,
+} from "react-native";
 
 interface Chrome {
-    serialNumber: string
+  serialNumber: string;
 }
 
-export default function CriarChrome() {
-    const router = useRouter()
-    const [chromes, setChromes] = useState<Chrome>({
-        serialNumber: ''
-    })
-    const { chromeId } = useLocalSearchParams()
+export default function EditarChrome() {
+  const router = useRouter();
+  const [chromes, setChromes] = useState<Chrome>({
+    serialNumber: "",
+  });
+  const { chromeId } = useLocalSearchParams();
 
-    async function editarChrome() {
-        const response = await fetch(`http://10.21.144.201:3000/chromes/${chromeId}`, {
-            method: "PUT",
-            headers: {
-                "Content-type": "application/json"
-            },
-            body: JSON.stringify({
-                serialNumber: chromes.serialNumber
-            })
-        })
-        if (response.ok) {
-            Alert.alert('Sucesso',
-                'Chromebook atualizado',
-                [
-                    {
-                        text: "OK", onPress: () => {
-                            router.back()
-                        }
-                    }
-                ]
-            )
-        } else {
-            Alert.alert('Erro',
-                'Chromebook não atualizado!',
-            )
-        }
+  async function editarChrome() {
+    const response = await fetch(`http://192.168.15.37:3000/chromes/${chromeId}`, {
+      method: "PUT",
+      headers: {
+        "Content-type": "application/json",
+      },
+      body: JSON.stringify({
+        serialNumber: chromes.serialNumber,
+      }),
+    });
+
+    if (response.ok) {
+      Alert.alert("Sucesso", "Chromebook atualizado com sucesso!", [
+        { text: "OK", onPress: () => router.back() },
+      ]);
+    } else {
+      Alert.alert("Erro", "Não foi possível atualizar o Chromebook.");
     }
+  }
 
-    return (
-        <>
-            <View>
-                <Text>
-                    Número de Série do Chromebook: </Text>
-                <TextInput placeholder="Digite o número de série:"
-                    value={chromes.serialNumber}
-                    onChangeText={(newSerial) => {
-                        setChromes({ ...chromes, serialNumber: newSerial })
-                    }}
-                />
-            </View>
-            <View>
-                <Button onPress={editarChrome} title="Salvar"></Button>
-            </View>
-        </>
-    )
+  return (
+    <View style={styles.container}>
+      <Text style={styles.title}>Editar Chromebook</Text>
+
+      <View style={styles.inputContainer}>
+        <Text style={styles.label}>Número de Série:</Text>
+        <TextInput
+          style={styles.input}
+          placeholder="Digite o número de série"
+          placeholderTextColor="#888"
+          value={chromes.serialNumber}
+          onChangeText={(text) =>
+            setChromes({ ...chromes, serialNumber: text })
+          }
+        />
+      </View>
+
+      <TouchableOpacity style={styles.button} onPress={editarChrome}>
+        <Text style={styles.buttonText}>Salvar Alterações</Text>
+      </TouchableOpacity>
+    </View>
+  );
 }
 
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#f2f2f2",
+    padding: 24,
+    justifyContent: "center",
+  },
+  title: {
+    fontSize: 26,
+    fontWeight: "bold",
+    color: "#007AFF",
+    textAlign: "center",
+    marginBottom: 32,
+  },
+  inputContainer: {
+    marginBottom: 24,
+  },
+  label: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#333",
+    marginBottom: 8,
+  },
+  input: {
+    backgroundColor: "#fff",
+    padding: 14,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "#ccc",
+    fontSize: 16,
+  },
+  button: {
+    backgroundColor: "#007AFF",
+    paddingVertical: 16,
+    borderRadius: 12,
+    alignItems: "center",
+    ...(Platform.OS === 'web' && {
+      cursor: "pointer",
+    }),
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 18,
+    fontWeight: "600",
+  },
+});

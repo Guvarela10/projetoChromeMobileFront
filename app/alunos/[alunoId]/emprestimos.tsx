@@ -33,7 +33,7 @@ export default function ListaEmprestimos() {
     useEffect(() => {
         async function fetchEmprestimos() {
             try {
-                const response = await fetch(`http://10.21.144.201:3000/emprestimos/${alunoId}/`)
+                const response = await fetch(`http://192.168.15.37:3000/emprestimos/${alunoId}/`)
                 const body = await response.json()
                 setEmprestimos(body)
             } catch (error) {
@@ -49,7 +49,7 @@ export default function ListaEmprestimos() {
     useEffect(() => {
         async function fetchChromes() {
             try {
-                const response = await fetch(`http://10.21.144.201:3000/chromes`)
+                const response = await fetch(`http://192.168.15.37:3000/chromes`)
                 const body = await response.json()
                 setChromes(body)
             } catch (error) {
@@ -75,7 +75,7 @@ export default function ListaEmprestimos() {
 
     async function deletarEmprestimo(id: string) {
         try {
-            const response = await fetch(`http://10.21.144.201:3000/emprestimos/delete/${id}`, {
+            const response = await fetch(`http://192.168.15.37:3000/emprestimos/delete/${id}`, {
                 method: "DELETE"
             })
 

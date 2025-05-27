@@ -37,7 +37,7 @@ export default function CriarEmprestimo() {
 
     useEffect(() => {
         async function fetchAlunos() {
-            const response = await fetch("http://10.21.144.201:3000/alunos");
+            const response = await fetch("http://192.168.15.37:3000/alunos");
             const body = await response.json();
             setAlunos(body);
             if (body.length > 0) {
@@ -48,7 +48,7 @@ export default function CriarEmprestimo() {
     }, [telaFocada]);
 
     async function salvarEmprestimo() {
-        const response = await fetch(`http://10.21.144.201:3000/chromes/${chromeId}/emprestimos`, {
+        const response = await fetch(`http://192.168.15.37:3000/chromes/${chromeId}/emprestimos`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json"
@@ -75,7 +75,7 @@ export default function CriarEmprestimo() {
             <Text style={styles.label}>Status do Empréstimo:</Text>
             <TextInput
                 style={styles.input}
-                placeholder="Digite o status (Ex: emprestado)"
+                placeholder="Digite o status (Ex: ativo)"
                 placeholderTextColor="#aaa"
                 value={emprestimo.status}
                 onChangeText={(text) =>

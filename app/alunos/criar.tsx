@@ -1,4 +1,4 @@
-import { useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import { useState } from "react";
 import {
     Alert,
@@ -21,9 +21,13 @@ export default function CriarAluno() {
         name: '',
         matricula: ''
     });
+    const navigation = useNavigation();
 
     async function salvarAluno() {
-        const response = await fetch('http://10.21.144.201:3000/alunos', {
+        navigation.setOptions({
+            tabBarStyle: { display: "none" },
+        })
+        const response = await fetch('http://192.168.15.37:3000/alunos', {
             method: "POST",
             headers: {
                 "Content-type": "application/json"

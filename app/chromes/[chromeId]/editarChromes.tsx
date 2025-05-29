@@ -1,13 +1,13 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    Alert,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 interface Chrome {
@@ -22,7 +22,7 @@ export default function EditarChrome() {
   const { chromeId } = useLocalSearchParams();
 
   async function editarChrome() {
-    const response = await fetch(`http://192.168.15.37:3000/chromes/${chromeId}`, {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/chromes/${chromeId}`, {
       method: "PUT",
       headers: {
         "Content-type": "application/json",

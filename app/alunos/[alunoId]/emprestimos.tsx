@@ -33,7 +33,7 @@ export default function ListaEmprestimos() {
     useEffect(() => {
         async function fetchEmprestimos() {
             try {
-                const response = await fetch(`http://192.168.15.37:3000/emprestimos/${alunoId}/`)
+                const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/emprestimos/${alunoId}/`)
                 const body = await response.json()
                 setEmprestimos(body)
             } catch (error) {
@@ -49,12 +49,12 @@ export default function ListaEmprestimos() {
     useEffect(() => {
         async function fetchChromes() {
             try {
-                const response = await fetch(`http://192.168.15.37:3000/chromes`)
+                const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/chromes`)
                 const body = await response.json()
                 setChromes(body)
             } catch (error) {
                 console.log(
-                    "Não foi possível conectar ao servidor e puxar a lista de emprestimos: " +
+                    "Não foi possível conectar ao servidor e puxar a lista de Chromebooks: " +
                     error
                 )
             }
@@ -75,12 +75,9 @@ export default function ListaEmprestimos() {
 
     async function deletarEmprestimo(id: string) {
         try {
-            const response = await fetch(`http://192.168.15.37:3000/emprestimos/delete/${id}`, {
+            const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/emprestimos/delete/${id}`, {
                 method: "DELETE"
             })
-
-            // console.log('responde porra')
-            // console.log(response)
 
             if (response.ok) {
                 Alert.alert("Sucesso", "Emprestimo excluído com sucesso!")
@@ -96,6 +93,8 @@ export default function ListaEmprestimos() {
     return (
         <View style={styles.container}>
             <ScrollView contentContainerStyle={styles.scrollContent}>
+                <Text> </Text>
+                <Text> </Text>
                 <Text style={styles.titulo}>Lista de Empréstimos</Text>
 
                 {emprestimos.map((emprestimo) => {
@@ -131,60 +130,60 @@ export default function ListaEmprestimos() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#f2f2f2",
-  },
-  scrollContent: {
-    padding: 16,
-    paddingBottom: 100,
-    alignItems: 'center', // centraliza os cards horizontalmente
-  },
-  titulo: {
-    fontSize: 28,
-    fontWeight: "bold",
-    marginBottom: 24,
-    textAlign: "center",
-    color: "#007AFF",
-  },
-  card: {
-    backgroundColor: "#ffffff",
-    borderRadius: 16,
-    padding: 20,
-    marginBottom: 16,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.15,
-    shadowRadius: 6,
-    elevation: 6,
-    borderLeftWidth: 6,
-    borderLeftColor: "#007AFF",
-    borderWidth: 2,
-    borderColor: "#000000",
+    container: {
+        flex: 1,
+        backgroundColor: "#f2f2f2",
+    },
+    scrollContent: {
+        padding: 16,
+        paddingBottom: 100,
+        alignItems: 'center', // centraliza os cards horizontalmente
+    },
+    titulo: {
+        fontSize: 28,
+        fontWeight: "bold",
+        marginBottom: 24,
+        textAlign: "center",
+        color: "#007AFF",
+    },
+    card: {
+        backgroundColor: "#ffffff",
+        borderRadius: 16,
+        padding: 20,
+        marginBottom: 16,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.15,
+        shadowRadius: 6,
+        elevation: 6,
+        borderLeftWidth: 6,
+        borderLeftColor: "#007AFF",
+        borderWidth: 2,
+        borderColor: "#000000",
 
-    // Ajuste de proporção
-    width: '100%',
-    maxWidth: 400,
-    minHeight: 130,
-    justifyContent: 'center',
-  },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#444",
-    marginBottom: 6,
-  },
-  valor: {
-    fontWeight: "400",
-    color: "#111",
-    fontSize: 16,
-  },
-  cardText: {
+        // Ajuste de proporção
+        width: '100%',
+        maxWidth: 400,
+        minHeight: 130,
+        justifyContent: 'center',
+    },
+    label: {
+        fontSize: 16,
+        fontWeight: "600",
+        color: "#444",
+        marginBottom: 6,
+    },
+    valor: {
+        fontWeight: "400",
+        color: "#111",
+        fontSize: 16,
+    },
+    cardText: {
         fontSize: 18,
         fontWeight: "600",
         color: "#222"
     },
-     editButton: {
+    editButton: {
         position: "absolute",
         top: 10,
         right: 10,
@@ -193,24 +192,24 @@ const styles = StyleSheet.create({
         backgroundColor: "#e6f0ff",
         borderRadius: 8,
     },
-  fab: {
-    position: "absolute",
-    bottom: 24,
-    right: 24,
-    backgroundColor: "#007AFF",
-    width: 70,
-    height: 70,
-    borderRadius: 30,
-    justifyContent: "center",
-    alignItems: "center",
-    elevation: 8,
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.35,
-    shadowRadius: 6,
-    ...(Platform.OS === 'web' && {
-      transition: 'all 0.2s ease-in-out',
-      cursor: 'pointer',
-    }),
-  },
+    fab: {
+        position: "absolute",
+        bottom: 24,
+        right: 24,
+        backgroundColor: "#007AFF",
+        width: 70,
+        height: 70,
+        borderRadius: 30,
+        justifyContent: "center",
+        alignItems: "center",
+        elevation: 8,
+        shadowColor: "#000",
+        shadowOffset: { width: 0, height: 3 },
+        shadowOpacity: 0.35,
+        shadowRadius: 6,
+        ...(Platform.OS === 'web' && {
+            transition: 'all 0.2s ease-in-out',
+            cursor: 'pointer',
+        }),
+    },
 })

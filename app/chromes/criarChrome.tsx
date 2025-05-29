@@ -21,7 +21,7 @@ export default function CriarChrome() {
     });
 
     async function salvarChrome() {
-        const response = await fetch('http://192.168.15.37:3000/chromes', {
+        const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/chromes`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json"

@@ -1,13 +1,13 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
 import { useState } from "react";
 import {
-    Alert,
-    Platform,
-    StyleSheet,
-    Text,
-    TextInput,
-    TouchableOpacity,
-    View,
+  Alert,
+  Platform,
+  StyleSheet,
+  Text,
+  TextInput,
+  TouchableOpacity,
+  View,
 } from "react-native";
 
 interface Aluno {
@@ -24,7 +24,7 @@ export default function EditarAluno() {
   const { alunoId } = useLocalSearchParams();
 
   async function editarAluno() {
-    const response = await fetch(`http://192.168.15.37:3000/alunos/${alunoId}`, {
+    const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/alunos/${alunoId}`, {
       method: "PUT",
       headers: {
         "Content-type": "application/json",

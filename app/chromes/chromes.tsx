@@ -30,7 +30,7 @@ export default function ListaChromes() {
 
     async function fetchChromes() {
         try {
-            const response = await fetch("http://192.168.15.37:3000/chromes")
+            const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/chromes`)
             const body = await response.json()
             setChromes(body)
         } catch (error) {
@@ -51,7 +51,7 @@ export default function ListaChromes() {
 
     async function deletarChrome(id: string) {
         try {
-            const response = await fetch(`http://192.168.15.37:3000/chromes/delete/${id}`, {
+            const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/chromes/delete/${id}`, {
                 method: "DELETE"
             })
 

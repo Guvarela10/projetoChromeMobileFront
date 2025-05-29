@@ -27,7 +27,7 @@ export default function CriarAluno() {
         navigation.setOptions({
             tabBarStyle: { display: "none" },
         })
-        const response = await fetch('http://192.168.15.37:3000/alunos', {
+        const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/alunos`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json"
@@ -37,9 +37,7 @@ export default function CriarAluno() {
                 matricula: alunos.matricula
             })
         });
-
-        console.log('responde prr', response)
-
+        
         if (response.ok) {
             Alert.alert('Sucesso', 'Aluno cadastrado!', [
                 { text: "OK", onPress: () => router.back() }

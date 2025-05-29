@@ -27,7 +27,7 @@ export default function ListaAlunos() {
 
   useEffect(() => {
     async function fetchAlunos() {
-      const response = await fetch("http://192.168.15.37:3000/alunos")
+      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/alunos`)
       const body = await response.json()
       setAlunos(body)
     }
@@ -47,7 +47,7 @@ export default function ListaAlunos() {
   
       async function deletarAluno(id: string) {
           try {
-              const response = await fetch(`http://192.168.15.37:3000/alunos/delete/${id}`, {
+              const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/alunos/delete/${id}`, {
                   method: "DELETE"
               })
   

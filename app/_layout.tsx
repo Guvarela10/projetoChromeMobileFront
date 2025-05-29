@@ -1,6 +1,8 @@
 import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
+const shouldShowCreateChrome = false; // Defina como `false` para não exibir a aba
+
 export default function Layout() {
   return (
     <Tabs
@@ -36,6 +38,34 @@ export default function Layout() {
           ),
         }}
       />
+      {shouldShowCreateChrome && (
+        <Tabs.Screen
+          name="chromes/criarChrome"
+          options={{
+          }}
+          />
+        )}
+
+        {shouldShowCreateChrome && (
+        <Tabs.Screen
+          name="alunos/criar"
+          options={{
+          }}
+          />
+        )}
+
+        {shouldShowCreateChrome && (
+        <Tabs.Screen
+          name="chromes/criarChrome"
+          options={{
+          }}
+          />
+        )}
+
+        
     </Tabs>
   );
+
+
+
 }

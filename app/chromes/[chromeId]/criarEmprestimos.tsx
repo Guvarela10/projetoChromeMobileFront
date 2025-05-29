@@ -48,7 +48,7 @@ export default function CriarEmprestimo() {
     }, [telaFocada]);
 
     async function salvarEmprestimo() {
-        const response = await fetch(`http://192.168.15.37:3000/chromes/${chromeId}/emprestimos`, {
+        const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/chromes/${chromeId}/emprestimos`, {
             method: "POST",
             headers: {
                 "Content-type": "application/json"

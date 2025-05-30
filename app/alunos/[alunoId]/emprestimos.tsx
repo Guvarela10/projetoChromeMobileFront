@@ -4,7 +4,6 @@ import { useLocalSearchParams } from "expo-router"
 import { useEffect, useState } from "react"
 import {
     Alert,
-    Platform,
     ScrollView,
     StyleSheet,
     Text,
@@ -28,7 +27,6 @@ export default function ListaEmprestimos() {
     const { alunoId } = useLocalSearchParams();
     const telaFocada = useIsFocused()
     const [chromes, setChromes] = useState<Chromes[]>([])
-
 
     useEffect(() => {
         async function fetchEmprestimos() {
@@ -62,10 +60,44 @@ export default function ListaEmprestimos() {
         fetchChromes()
     }, [telaFocada])
 
+    function confirmarDesativacao(id: string) {
+        Alert.alert(
+            "Confirmar Desativação",
+            "Deseja realmente desativar este empréstimo?",
+            [
+                { text: "Cancelar", style: "cancel" },
+                { text: "Sim", onPress: () => desativarEmprestimo(id) }
+            ]
+        )
+    }
+
+    async function desativarEmprestimo(id: string) {
+        try {
+            const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/emprestimos/${id}`, {
+                method: "PUT",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ status: "desativado" }),
+            })
+
+            if (response.ok) {
+                Alert.alert("Sucesso", "Empréstimo desativado com sucesso!")
+                setEmprestimos(prev =>
+                    prev.map(e =>
+                        e.id === id ? { ...e, status: "desativado" } : e
+                    )
+                )
+            } else {
+                Alert.alert("Erro", "Não foi possível desativar o empréstimo.")
+            }
+        } catch (error) {
+            Alert.alert("Erro", "Erro ao desativar: " + error)
+        }
+    }
+
     function confirmarExclusao(id: string) {
         Alert.alert(
             "Confirmar Exclusão",
-            "Deseja realmente excluir este emprestimo?",
+            "Deseja realmente excluir este empréstimo?",
             [
                 { text: "Cancelar", style: "cancel" },
                 { text: "Excluir", style: "destructive", onPress: () => deletarEmprestimo(id) }
@@ -80,10 +112,10 @@ export default function ListaEmprestimos() {
             })
 
             if (response.ok) {
-                Alert.alert("Sucesso", "Emprestimo excluído com sucesso!")
+                Alert.alert("Sucesso", "Empréstimo excluído com sucesso!")
                 setEmprestimos(del => del.filter(emprestimo => emprestimo.id !== id))
             } else {
-                Alert.alert("Erro", "Não foi possível excluir o emprestimo!")
+                Alert.alert("Erro", "Não foi possível excluir o empréstimo!")
             }
         } catch (error) {
             Alert.alert("Erro", "Erro ao excluir: " + error)
@@ -102,7 +134,6 @@ export default function ListaEmprestimos() {
 
                     return (
                         <View key={emprestimo.id} style={styles.card}>
-                            {/* Botão excluir */}
                             <TouchableOpacity
                                 style={[styles.editButton, { right: 10 }]}
                                 onPress={() => confirmarExclusao(emprestimo.id)}
@@ -110,8 +141,11 @@ export default function ListaEmprestimos() {
                                 <MaterialIcons name="delete" size={20} color="#FF3B30" />
                             </TouchableOpacity>
 
-                            {/* Card principal */}
-                            <TouchableOpacity activeOpacity={0.7} style={{ paddingTop: 10 }}>
+                            <TouchableOpacity
+                                activeOpacity={0.7}
+                                style={{ paddingTop: 10 }}
+                                onPress={() => confirmarDesativacao(emprestimo.id)}
+                            >
                                 <View>
                                     <Text style={styles.cardText}>ID: {emprestimo.id}</Text>
                                     <Text style={styles.cardText}>Status: {emprestimo.status}</Text>
@@ -126,7 +160,6 @@ export default function ListaEmprestimos() {
             </ScrollView>
         </View>
     )
-
 }
 
 const styles = StyleSheet.create({
@@ -137,7 +170,7 @@ const styles = StyleSheet.create({
     scrollContent: {
         padding: 16,
         paddingBottom: 100,
-        alignItems: 'center', // centraliza os cards horizontalmente
+        alignItems: 'center',
     },
     titulo: {
         fontSize: 28,
@@ -161,7 +194,6 @@ const styles = StyleSheet.create({
         borderWidth: 2,
         borderColor: "#000000",
 
-        // Ajuste de proporção
         width: '100%',
         maxWidth: 400,
         minHeight: 130,
@@ -191,25 +223,5 @@ const styles = StyleSheet.create({
         padding: 6,
         backgroundColor: "#e6f0ff",
         borderRadius: 8,
-    },
-    fab: {
-        position: "absolute",
-        bottom: 24,
-        right: 24,
-        backgroundColor: "#007AFF",
-        width: 70,
-        height: 70,
-        borderRadius: 30,
-        justifyContent: "center",
-        alignItems: "center",
-        elevation: 8,
-        shadowColor: "#000",
-        shadowOffset: { width: 0, height: 3 },
-        shadowOpacity: 0.35,
-        shadowRadius: 6,
-        ...(Platform.OS === 'web' && {
-            transition: 'all 0.2s ease-in-out',
-            cursor: 'pointer',
-        }),
     },
 })

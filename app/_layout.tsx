@@ -1,7 +1,7 @@
 import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
-const shouldShowCreateChrome = false; // Defina como `false` para não exibir a aba
+const shouldShowCreateChrome = false;
 
 export default function Layout() {
   return (

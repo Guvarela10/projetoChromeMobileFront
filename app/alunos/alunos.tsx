@@ -35,32 +35,32 @@ export default function ListaAlunos() {
   }, [telaFocada])
 
   function confirmarExclusao(id: string) {
-          Alert.alert(
-              "Confirmar Exclusão",
-              "Deseja realmente excluir este aluno?",
-              [
-                  { text: "Cancelar", style: "cancel" },
-                  { text: "Excluir", style: "destructive", onPress: () => deletarAluno(id) }
-              ]
-          )
+    Alert.alert(
+      "Confirmar Exclusão",
+      "Deseja realmente excluir este aluno?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        { text: "Excluir", style: "destructive", onPress: () => deletarAluno(id) }
+      ]
+    )
+  }
+
+  async function deletarAluno(id: string) {
+    try {
+      const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/alunos/delete/${id}`, {
+        method: "DELETE"
+      })
+
+      if (response.ok) {
+        Alert.alert("Sucesso", "Aluno excluído com sucesso!")
+        setAlunos(del => del.filter(aluno => aluno.id !== id))
+      } else {
+        Alert.alert("Erro", "Não foi possível excluir o aluno!")
       }
-  
-      async function deletarAluno(id: string) {
-          try {
-              const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/alunos/delete/${id}`, {
-                  method: "DELETE"
-              })
-  
-              if (response.ok) {
-                  Alert.alert("Sucesso", "Chromebook excluído com sucesso!")
-                  setAlunos(del => del.filter(aluno => aluno.id !== id))
-              } else {
-                  Alert.alert("Erro", "Não foi possível excluir o aluno!")
-              }
-          } catch (error) {
-              Alert.alert("Erro", "Erro ao excluir: " + error)
-          }
-      }
+    } catch (error) {
+      Alert.alert("Erro", "Erro ao excluir: " + error)
+    }
+  }
 
   const handlePressIn = () => {
     Animated.spring(scaleAnim, {
@@ -85,47 +85,50 @@ export default function ListaAlunos() {
         <Text> </Text>
         <Text style={styles.titulo}>Lista de Alunos</Text>
 
-        {alunos.map((aluno) => (
-                <View key={aluno.id} style={styles.card}>
-                    {/* Botão editar */}
-                    <Link
-                        href={{
-                            pathname: "/alunos/[alunoId]/editarAlunos",
-                            params: { alunoId: aluno.id }
-                        }}
-                        asChild
-                    >
-                        <TouchableOpacity style={styles.editButton}>
-                            <AntDesign name="edit" size={20} color="#007AFF" />
-                        </TouchableOpacity>
-                    </Link>
+        {alunos.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Nenhum Chromebook cadastrado.{"\n"}Clique no botão + para adicionar.</Text>
+          </View>
+        ) : (
+          alunos.map((aluno) => (
+            <View key={aluno.id} style={styles.card}>
+              <Link
+                href={{
+                  pathname: "/alunos/[alunoId]/editarAlunos",
+                  params: { alunoId: aluno.id }
+                }}
+                asChild
+              >
+                <TouchableOpacity style={styles.editButton}>
+                  <AntDesign name="edit" size={20} color="#007AFF" />
+                </TouchableOpacity>
+              </Link>
 
-                    {/* Botão excluir */}
-                    <TouchableOpacity
-                        style={[styles.editButton, { right: 50 }]}
-                        onPress={() => confirmarExclusao(aluno.id)}
-                    >
-                        <MaterialIcons name="delete" size={20} color="#FF3B30" />
-                    </TouchableOpacity>
+              <TouchableOpacity
+                style={[styles.editButton, { right: 50 }]}
+                onPress={() => confirmarExclusao(aluno.id)}
+              >
+                <MaterialIcons name="delete" size={20} color="#FF3B30" />
+              </TouchableOpacity>
 
-                    {/* Card principal */}
-                    <Link
-                        href={{
-                            pathname: "/alunos/[alunoId]/emprestimos",
-                            params: { alunoId: aluno.id }
-                        }}
-                        asChild
-                    >
-                        <TouchableOpacity activeOpacity={0.7}>
-                            <View style={{ paddingTop: 10 }}>
-                                <Text style={styles.cardText}>ID: {aluno.id}</Text>
-                                <Text style={styles.cardText}>Nome: {aluno.name}</Text>
-                                <Text style={styles.cardText}>Matricula: {aluno.matricula}</Text>
-                            </View>
-                        </TouchableOpacity>
-                    </Link>
-                </View>
-            ))}
+              <Link
+                href={{
+                  pathname: "/alunos/[alunoId]/emprestimos",
+                  params: { alunoId: aluno.id }
+                }}
+                asChild
+              >
+                <TouchableOpacity activeOpacity={0.7}>
+                  <View style={{ paddingTop: 10 }}>
+                    <Text style={styles.cardText}>ID: {aluno.id}</Text>
+                    <Text style={styles.cardText}>Nome: {aluno.name}</Text>
+                    <Text style={styles.cardText}>Matrícula: {aluno.matricula}</Text>
+                  </View>
+                </TouchableOpacity>
+              </Link>
+            </View>
+          ))
+        )}
       </ScrollView>
 
       <Link href={"/alunos/criar"} asChild>
@@ -150,7 +153,7 @@ const styles = StyleSheet.create({
   scrollContent: {
     padding: 16,
     paddingBottom: 100,
-    alignItems: 'center', // centraliza os cards horizontalmente
+    alignItems: 'center',
   },
   titulo: {
     fontSize: 28,
@@ -173,38 +176,25 @@ const styles = StyleSheet.create({
     borderLeftColor: "#007AFF",
     borderWidth: 2,
     borderColor: "#000000",
-
-    // Ajuste de proporção
     width: '100%',
     maxWidth: 400,
     minHeight: 130,
     justifyContent: 'center',
   },
-  label: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#444",
-    marginBottom: 6,
-  },
-  valor: {
-    fontWeight: "400",
-    color: "#111",
-    fontSize: 16,
-  },
   cardText: {
-        fontSize: 18,
-        fontWeight: "600",
-        color: "#222"
-    },
-     editButton: {
-        position: "absolute",
-        top: 10,
-        right: 10,
-        zIndex: 2,
-        padding: 6,
-        backgroundColor: "#e6f0ff",
-        borderRadius: 8,
-    },
+    fontSize: 18,
+    fontWeight: "600",
+    color: "#222"
+  },
+  editButton: {
+    position: "absolute",
+    top: 10,
+    right: 10,
+    zIndex: 2,
+    padding: 6,
+    backgroundColor: "#e6f0ff",
+    borderRadius: 8,
+  },
   fab: {
     position: "absolute",
     bottom: 24,
@@ -224,5 +214,15 @@ const styles = StyleSheet.create({
       transition: 'all 0.2s ease-in-out',
       cursor: 'pointer',
     }),
+  },
+  emptyContainer: {
+    alignItems: "center",
+    marginTop: 50,
+    paddingHorizontal: 20,
+  },
+  emptyText: {
+    fontSize: 18,
+    textAlign: "center",
+    color: "#666",
   },
 })

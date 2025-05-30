@@ -1,7 +1,7 @@
-import { AntDesign, MaterialIcons } from "@expo/vector-icons"
-import { useIsFocused } from "@react-navigation/native"
-import { Link } from "expo-router"
-import { useEffect, useRef, useState } from "react"
+import { AntDesign, MaterialIcons } from "@expo/vector-icons";
+import { useIsFocused } from "@react-navigation/native";
+import { Link } from "expo-router";
+import { useEffect, useRef, useState } from "react";
 import {
     Alert,
     Animated,
@@ -12,29 +12,30 @@ import {
     TouchableOpacity,
     TouchableWithoutFeedback,
     View
-} from "react-native"
+} from "react-native";
 
 interface Chrome {
-    id: string
-    serialNumber: string
+    id: string;
+    serialNumber: string;
+    isBorrowed: boolean;
 }
 
 export default function ListaChromes() {
-    const [chromes, setChromes] = useState<Chrome[]>([])
-    const telaFocada = useIsFocused()
-    const scaleAnim = useRef(new Animated.Value(1)).current
+    const [chromes, setChromes] = useState<Chrome[]>([]);
+    const telaFocada = useIsFocused();
+    const scaleAnim = useRef(new Animated.Value(1)).current;
 
     useEffect(() => {
-        fetchChromes()
-    }, [telaFocada])
+        fetchChromes();
+    }, [telaFocada]);
 
     async function fetchChromes() {
         try {
-            const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/chromes`)
-            const body = await response.json()
-            setChromes(body)
+            const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/chromes`);
+            const body = await response.json();
+            setChromes(body);
         } catch (error) {
-            console.log("Erro ao buscar chromes: " + error)
+            console.log("Erro ao buscar chromes: " + error);
         }
     }
 
@@ -46,23 +47,23 @@ export default function ListaChromes() {
                 { text: "Cancelar", style: "cancel" },
                 { text: "Excluir", style: "destructive", onPress: () => deletarChrome(id) }
             ]
-        )
+        );
     }
 
     async function deletarChrome(id: string) {
         try {
             const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/chromes/delete/${id}`, {
                 method: "DELETE"
-            })
+            });
 
             if (response.ok) {
-                Alert.alert("Sucesso", "Chromebook excluído com sucesso!")
-                setChromes(del => del.filter(chrome => chrome.id !== id))
+                Alert.alert("Sucesso", "Chromebook excluído com sucesso!");
+                setChromes(del => del.filter(chrome => chrome.id !== id));
             } else {
-                Alert.alert("Erro", "Não foi possível excluir o Chromebook!")
+                Alert.alert("Erro", "Não foi possível excluir o Chromebook!");
             }
         } catch (error) {
-            Alert.alert("Erro", "Erro ao excluir: " + error)
+            Alert.alert("Erro", "Erro ao excluir: " + error);
         }
     }
 
@@ -70,8 +71,8 @@ export default function ListaChromes() {
         Animated.spring(scaleAnim, {
             toValue: 0.92,
             useNativeDriver: true,
-        }).start()
-    }
+        }).start();
+    };
 
     const handlePressOut = () => {
         Animated.spring(scaleAnim, {
@@ -79,8 +80,8 @@ export default function ListaChromes() {
             friction: 3,
             tension: 40,
             useNativeDriver: true,
-        }).start()
-    }
+        }).start();
+    };
 
     return (
         <View style={styles.container}>
@@ -89,46 +90,60 @@ export default function ListaChromes() {
                 <Text> </Text>
                 <Text style={styles.titulo}>Lista de Chromebooks</Text>
 
-                {chromes.map((chrome) => (
-                    <View key={chrome.id} style={styles.card}>
-                        {/* Botão editar */}
-                        <Link
-                            href={{
-                                pathname: "/chromes/[chromeId]/editarChromes",
-                                params: { chromeId: chrome.id }
-                            }}
-                            asChild
-                        >
-                            <TouchableOpacity style={styles.editButton}>
-                                <AntDesign name="edit" size={20} color="#007AFF" />
-                            </TouchableOpacity>
-                        </Link>
-
-                        {/* Botão excluir */}
-                        <TouchableOpacity
-                            style={[styles.editButton, { right: 50 }]}
-                            onPress={() => confirmarExclusao(chrome.id)}
-                        >
-                            <MaterialIcons name="delete" size={20} color="#FF3B30" />
-                        </TouchableOpacity>
-
-                        {/* Card principal */}
-                        <Link
-                            href={{
-                                pathname: "/chromes/[chromeId]/criarEmprestimos",
-                                params: { chromeId: chrome.id }
-                            }}
-                            asChild
-                        >
-                            <TouchableOpacity activeOpacity={0.7}>
-                                <View style={{ paddingTop: 10 }}>
-                                    <Text style={styles.cardText}>ID: {chrome.id}</Text>
-                                    <Text style={styles.cardText}>Serial Number: {chrome.serialNumber}</Text>
-                                </View>
-                            </TouchableOpacity>
-                        </Link>
+                {chromes.length === 0 ? (
+                    <View style={styles.semDados}>
+                        <Text style={styles.semDadosTexto}>
+                            Nenhum Chromebook cadastrado.{"\n"}Clique no botão + para adicionar.
+                        </Text>
                     </View>
-                ))}
+                ) : (
+                    chromes.map((chrome) => (
+                        <View key={chrome.id} style={styles.card}>
+                            {/* Bolinha de status */}
+                            <View
+                                style={[
+                                    styles.statusDot,
+                                    { backgroundColor: chrome.isBorrowed ? "#FF3B30" : "#34C759" } 
+                                    // vermelho se emprestado (true), verde se disponível (false)
+                                ]}
+                            />
+
+                            <Link
+                                href={{
+                                    pathname: "/chromes/[chromeId]/editarChromes",
+                                    params: { chromeId: chrome.id }
+                                }}
+                                asChild
+                            >
+                                <TouchableOpacity style={styles.editButton}>
+                                    <AntDesign name="edit" size={20} color="#007AFF" />
+                                </TouchableOpacity>
+                            </Link>
+
+                            <TouchableOpacity
+                                style={[styles.editButton, { right: 50 }]}
+                                onPress={() => confirmarExclusao(chrome.id)}
+                            >
+                                <MaterialIcons name="delete" size={20} color="#FF3B30" />
+                            </TouchableOpacity>
+
+                            <Link
+                                href={{
+                                    pathname: "/chromes/[chromeId]/criarEmprestimos",
+                                    params: { chromeId: chrome.id }
+                                }}
+                                asChild
+                            >
+                                <TouchableOpacity activeOpacity={0.7}>
+                                    <View style={{ paddingTop: 10 }}>
+                                        <Text style={styles.cardText}>ID: {chrome.id}</Text>
+                                        <Text style={styles.cardText}>Serial Number: {chrome.serialNumber}</Text>
+                                    </View>
+                                </TouchableOpacity>
+                            </Link>
+                        </View>
+                    ))
+                )}
             </ScrollView>
 
             <Link href={"/chromes/criarChrome"} asChild>
@@ -142,7 +157,7 @@ export default function ListaChromes() {
                 </TouchableWithoutFeedback>
             </Link>
         </View>
-    )
+    );
 }
 
 const styles = StyleSheet.create({
@@ -153,7 +168,7 @@ const styles = StyleSheet.create({
     scrollContent: {
         padding: 16,
         paddingBottom: 100,
-        alignItems: 'center', // centraliza os cards horizontalmente
+        alignItems: 'center',
     },
     titulo: {
         fontSize: 28,
@@ -176,23 +191,21 @@ const styles = StyleSheet.create({
         borderLeftColor: "#007AFF",
         borderWidth: 2,
         borderColor: "#000000",
-
-        // Ajuste de proporção
         width: '100%',
         maxWidth: 400,
         minHeight: 130,
         justifyContent: 'center',
     },
-    label: {
-        fontSize: 16,
-        fontWeight: "600",
-        color: "#444",
-        marginBottom: 6,
-    },
-    valor: {
-        fontWeight: "400",
-        color: "#111",
-        fontSize: 16,
+    statusDot: {
+        position: 'absolute',
+        top: 12,
+        left: 12,
+        width: 16,
+        height: 16,
+        borderRadius: 8,
+        borderWidth: 1,
+        borderColor: '#ccc',
+        zIndex: 10,
     },
     cardText: {
         fontSize: 18,
@@ -228,4 +241,16 @@ const styles = StyleSheet.create({
             cursor: 'pointer',
         }),
     },
-})
+    semDados: {
+        alignItems: "center",
+        justifyContent: "center",
+        paddingVertical: 40,
+    },
+    semDadosTexto: {
+        fontSize: 18,
+        color: "#666",
+        textAlign: "center",
+        paddingHorizontal: 20,
+        lineHeight: 26,
+    },
+});

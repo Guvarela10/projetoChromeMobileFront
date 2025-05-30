@@ -7,7 +7,6 @@ import {
     Platform,
     StyleSheet,
     Text,
-    TextInput,
     TouchableOpacity,
     View
 } from "react-native";
@@ -29,7 +28,7 @@ export default function CriarEmprestimo() {
     const telaFocada = useIsFocused();
 
     const [emprestimo, setEmprestimo] = useState<Emprestimo>({
-        status: '',
+        status: 'ativo',
         alunoId: ''
     });
 
@@ -37,7 +36,7 @@ export default function CriarEmprestimo() {
 
     useEffect(() => {
         async function fetchAlunos() {
-            const response = await fetch("http://192.168.15.37:3000/alunos");
+            const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/alunos`);
             const body = await response.json();
             setAlunos(body);
             if (body.length > 0) {
@@ -71,18 +70,6 @@ export default function CriarEmprestimo() {
     return (
         <View style={styles.container}>
             <Text style={styles.title}>Cadastrar Empréstimo</Text>
-
-            <Text style={styles.label}>Status do Empréstimo:</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Digite o status (Ex: ativo)"
-                placeholderTextColor="#aaa"
-                value={emprestimo.status}
-                onChangeText={(text) =>
-                    setEmprestimo({ ...emprestimo, status: text })
-                }
-            />
-
             <Text style={styles.label}>Selecionar Aluno:</Text>
             <View style={styles.pickerWrapper}>
                 <Picker

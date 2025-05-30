@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   Platform,
@@ -22,6 +22,21 @@ export default function EditarAluno() {
     matricula: "",
   });
   const { alunoId } = useLocalSearchParams();
+
+  // 🚀 Buscar dados atuais do aluno
+  useEffect(() => {
+    async function fetchAluno() {
+      try {
+        const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/alunos/${alunoId}`);
+        const data = await response.json();
+        setAlunos({ name: data.name, matricula: data.matricula });
+      } catch (error) {
+        Alert.alert("Erro", "Não foi possível carregar os dados do aluno.");
+      }
+    }
+
+    fetchAluno();
+  }, [alunoId]);
 
   async function editarAluno() {
     const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/alunos/${alunoId}`, {

@@ -1,8 +1,6 @@
 import { FontAwesome, Ionicons, MaterialIcons } from "@expo/vector-icons";
 import { Tabs } from "expo-router";
 
-const shouldShowCreateChrome = false;
-
 export default function Layout() {
   return (
     <Tabs
@@ -38,31 +36,42 @@ export default function Layout() {
           ),
         }}
       />
-      {shouldShowCreateChrome && (
-        <Tabs.Screen
-          name="chromes/criarChrome"
-          options={{
-          }}
-          />
-        )}
-
-        {shouldShowCreateChrome && (
-        <Tabs.Screen
-          name="alunos/criar"
-          options={{
-          }}
-          />
-        )}
-
-        {shouldShowCreateChrome && (
-        <Tabs.Screen
-          name="chromes/criarChrome"
-          options={{
-          }}
-          />
-        )}
-
-        
+      <Tabs.Screen
+        name="chromes/criarChrome"
+        options={{
+          href: null
+        }}
+      />
+      <Tabs.Screen
+        name="chromes/[chromeId]/criarEmprestimos"
+        options={{
+          href: null
+        }}
+      />
+      /<Tabs.Screen
+        name="chromes/[chromeId]/editarChromes"
+        options={{
+          href: null
+        }}
+      />
+      <Tabs.Screen
+        name="alunos/criar"
+        options={{
+          href: null,
+        }}
+      />
+      <Tabs.Screen
+        name="alunos/[alunoId]/editarAlunos"
+        options={{
+          href: null
+        }}
+      />
+      <Tabs.Screen
+        name="alunos/[alunoId]/emprestimos"
+        options={{
+          href: null
+        }}
+      />
     </Tabs>
   );
 

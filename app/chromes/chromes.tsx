@@ -103,7 +103,7 @@ export default function ListaChromes() {
                             <View
                                 style={[
                                     styles.statusDot,
-                                    { backgroundColor: chrome.isBorrowed ? "#FF3B30" : "#34C759" } 
+                                    { backgroundColor: chrome.isBorrowed ? "#FF3B30" : "#34C759" }
                                     // vermelho se emprestado (true), verde se disponível (false)
                                 ]}
                             />

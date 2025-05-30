@@ -87,7 +87,7 @@ export default function ListaAlunos() {
 
         {alunos.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>Nenhum Chromebook cadastrado.{"\n"}Clique no botão + para adicionar.</Text>
+            <Text style={styles.emptyText}>Nenhum aluno cadastrado.{"\n"}Clique no botão + para adicionar.</Text>
           </View>
         ) : (
           alunos.map((aluno) => (

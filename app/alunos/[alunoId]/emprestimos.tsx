@@ -129,34 +129,41 @@ export default function ListaEmprestimos() {
                 <Text> </Text>
                 <Text style={styles.titulo}>Lista de Empréstimos</Text>
 
-                {emprestimos.map((emprestimo) => {
-                    const chrome = chromes.find(c => c.id === emprestimo.chromeId)
+                {emprestimos.length === 0 ? (
+                    <View style={styles.emptyContainer}>
+                        <Text style={styles.emptyText}>Nenhum empréstimo cadastrado.{"\n"}Clique no botão + para adicionar.</Text>
+                    </View>
+                ) : (
+                    emprestimos.map((emprestimo) => {
+                        const chrome = chromes.find(c => c.id === emprestimo.chromeId)
 
-                    return (
-                        <View key={emprestimo.id} style={styles.card}>
-                            <TouchableOpacity
-                                style={[styles.editButton, { right: 10 }]}
-                                onPress={() => confirmarExclusao(emprestimo.id)}
-                            >
-                                <MaterialIcons name="delete" size={20} color="#FF3B30" />
-                            </TouchableOpacity>
+                        return (
+                            <View key={emprestimo.id} style={styles.card}>
+                                <TouchableOpacity
+                                    style={[styles.editButton, { right: 10 }]}
+                                    onPress={() => confirmarExclusao(emprestimo.id)}
+                                >
+                                    <MaterialIcons name="delete" size={20} color="#FF3B30" />
+                                </TouchableOpacity>
 
-                            <TouchableOpacity
-                                activeOpacity={0.7}
-                                style={{ paddingTop: 10 }}
-                                onPress={() => confirmarDesativacao(emprestimo.id)}
-                            >
-                                <View>
-                                    <Text style={styles.cardText}>ID: {emprestimo.id}</Text>
-                                    <Text style={styles.cardText}>Status: {emprestimo.status}</Text>
-                                    <Text style={styles.cardText}>
-                                        Serial Number: {chrome ? chrome.serialNumber : 'Carregando...'}
-                                    </Text>
-                                </View>
-                            </TouchableOpacity>
-                        </View>
-                    )
-                })}
+                                <TouchableOpacity
+                                    activeOpacity={0.7}
+                                    style={{ paddingTop: 10 }}
+                                    onPress={() => confirmarDesativacao(emprestimo.id)}
+                                >
+                                    <View>
+                                        <Text style={styles.cardText}>ID: {emprestimo.id}</Text>
+                                        <Text style={styles.cardText}>Status: {emprestimo.status}</Text>
+                                        <Text style={styles.cardText}>
+                                            Serial Number: {chrome ? chrome.serialNumber : 'Carregando...'}
+                                        </Text>
+                                    </View>
+                                </TouchableOpacity>
+                            </View>
+                        )
+                    })
+
+                )}
             </ScrollView>
         </View>
     )
@@ -223,5 +230,15 @@ const styles = StyleSheet.create({
         padding: 6,
         backgroundColor: "#e6f0ff",
         borderRadius: 8,
+    },
+    emptyContainer: {
+        alignItems: "center",
+        marginTop: 50,
+        paddingHorizontal: 20,
+    },
+    emptyText: {
+        fontSize: 18,
+        textAlign: "center",
+        color: "#666",
     },
 })

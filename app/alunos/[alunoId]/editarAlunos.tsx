@@ -23,7 +23,6 @@ export default function EditarAluno() {
   });
   const { alunoId } = useLocalSearchParams();
 
-  // 🚀 Buscar dados atuais do aluno
   useEffect(() => {
     async function fetchAluno() {
       try {

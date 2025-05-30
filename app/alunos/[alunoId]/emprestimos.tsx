@@ -131,7 +131,7 @@ export default function ListaEmprestimos() {
 
                 {emprestimos.length === 0 ? (
                     <View style={styles.emptyContainer}>
-                        <Text style={styles.emptyText}>Nenhum empréstimo cadastrado.{"\n"}Clique no botão + para adicionar.</Text>
+                        <Text style={styles.emptyText}>Nenhum empréstimo cadastrado.{"\n"}Vá para a página de Chromebooks para criar um.</Text>
                     </View>
                 ) : (
                     emprestimos.map((emprestimo) => {

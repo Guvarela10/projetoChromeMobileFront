@@ -1,1 +1,3 @@
-QUANDO CLICAR NO CARD DE EMPRESTIMOS, DAR UM ALERTA PERGUNTANDO SE DESEJA MESMO ENCERRAR O EMPRESTIMO, E SE DER OK, O STATUS MUDA PARA ENCERRADO, E NA TELA DE CHROMEBOOKS, O CHROMEBOOK FICA LIBERADO NOVAMENTE (OU TIRA A COR VERMELHA, OU FAZ OUTRA COISA SLA VO PENSAR NESSA PORRA AINDA)
+Aplicativo mobile desenvolvido para função de ajudar no gerenciamento de Chromebooks de empréstimos para alunos que danificarem os seus próprios.
+Criado com a tecnologia React Native e Expo, esse aplicativo visa facilitar o controle, tanto de entrada, como de saída.
+BackEnd feito com Node JS, banco de dados MySQL.

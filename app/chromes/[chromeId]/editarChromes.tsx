@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useRouter } from "expo-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   Alert,
   Platform,
@@ -20,6 +20,20 @@ export default function EditarChrome() {
     serialNumber: "",
   });
   const { chromeId } = useLocalSearchParams();
+
+   useEffect(() => {
+      async function fetchChrome() {
+        try {
+          const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/chromes/${chromeId}`);
+          const data = await response.json();
+          setChromes({ serialNumber: data.serialNumber });
+        } catch (error) {
+          Alert.alert("Erro", "Não foi possível carregar os dados do aluno.");
+        }
+      }
+  
+      fetchChrome();
+    }, [chromeId]);
 
   async function editarChrome() {
     const response = await fetch(`${process.env.EXPO_PUBLIC_BACKEND_URL}/chromes/${chromeId}`, {

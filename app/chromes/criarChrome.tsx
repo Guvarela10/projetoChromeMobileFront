@@ -30,6 +30,7 @@ export default function CriarChrome() {
                 serialNumber: chromes.serialNumber
             })
         });
+        console.log('responde porra' ,response)
 
         if (response.ok) {
             Alert.alert('Sucesso', 'Chromebook cadastrado!', [
